@@ -14,7 +14,7 @@ class Direction(Enum):
 point = namedtuple('point', 'x, y')
 
 #font
-font = pygame.font.Font('assets\ARIAL.TTF', 25)
+font = pygame.font.Font('assets/ARIAL.TTF', 25)
 
 #RGB colors
 WHITE = (255, 255, 255) 
@@ -24,9 +24,9 @@ PURPLE1 = (90, 30, 160)
 PURPLE2 = (170, 90, 255)
 
 BLOCK_SIZE = 20 #size of the snake block
-SPEED = 10  #moves/second (the bigger, the faster)
-speed_increment = 0.2 #increase in speed per food eaten
-max_speed = 20 #maximum speed
+SPEED = 40  #moves/second (the bigger, the faster)
+speed_increment = 0.5 #increase in speed per food eaten
+max_speed = 50 #maximum speed
 
 class SnakeGameAI:
     def __init__(self, w=640, h=480):
