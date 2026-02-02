@@ -1,10 +1,9 @@
 import streamlit as st
-from streamlit_autorefresh import st_autorefresh
 
 from snake_game import SnakeGame
-from renderer import render
 from inference import SnakeAgent
 from state_extractor import get_state
+from renderer import render
 
 st.set_page_config(layout="wide")
 
@@ -31,29 +30,23 @@ with col1:
 
 with col2:
     start = st.button("Start AI")
+    step = st.button("Next Step")
     reset = st.button("Reset")
-    speed = st.slider("Speed", 1, 10, 3)
+    steps = st.slider("Steps per click", 1, 10, 3)
 
 # ---------- CONTROLS ----------
 if start:
-    st.session_state.game = SnakeGame()
     st.session_state.running = True
-    st.session_state.score = 0
 
 if reset:
     st.session_state.game = SnakeGame()
     st.session_state.running = False
     st.session_state.score = 0
 
-# ---------- AUTO REFRESH ----------
-if st.session_state.running:
-    st_autorefresh(interval=200, key="snake_refresh")  # ~5 FPS
-
-# ---------- GAME STEP ----------
-if st.session_state.running:
-    for _ in range(speed):  # logic speed
+# ---------- GAME LOGIC ----------
+if st.session_state.running and step:
+    for _ in range(steps):
         state = get_state(game)
-
         action = [0, 0, 0]
         action[agent.act(state)] = 1
 
@@ -66,9 +59,4 @@ if st.session_state.running:
 
 # ---------- RENDER ----------
 frame = render(game)
-
-game_slot.image(
-    frame,
-    width=640,
-    caption=f"Score: {st.session_state.score}"
-)
+game_slot.image(frame, width=640, caption=f"Score: {st.session_state.score}")
