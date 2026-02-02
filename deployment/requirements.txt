@@ -1,6 +1,7 @@
 streamlit
 torch
 numpy
+pygame
 matplotlib
 streamlit
 streamlit-autorefresh

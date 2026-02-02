@@ -22,7 +22,7 @@ if "game" not in st.session_state:
 game = st.session_state.game
 
 # ---------- LAYOUT ----------
-col1, col2 = st.columns([3, 1], gap="small")
+col1, col2 = st.columns([3, 1])
 
 with col1:
     st.markdown("## Deep Q-Learning Snake Agent")
