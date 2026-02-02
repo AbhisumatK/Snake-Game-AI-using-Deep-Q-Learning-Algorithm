@@ -14,7 +14,7 @@ class Direction(Enum):
 point = namedtuple('point', 'x, y')
 
 #font
-font = pygame.font.Font('assets/ARIAL.TTF', 25)
+font = pygame.font.Font('training/assets/ARIAL.TTF', 25)
 
 #RGB colors
 WHITE = (255, 255, 255) 
