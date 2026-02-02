@@ -2,73 +2,56 @@ import streamlit as st
 import time
 
 from snake_game import SnakeGame
+from renderer import render
 from inference import SnakeAgent
 from state_extractor import get_state
-from renderer import render
 
 st.set_page_config(layout="wide")
 
+# Load model ONCE
 @st.cache_resource
 def load_agent():
     return SnakeAgent()
 
 agent = load_agent()
 
-# -------- SESSION STATE --------
+# Session state
 if "game" not in st.session_state:
     st.session_state.game = SnakeGame()
     st.session_state.running = False
-    st.session_state.frame = None
-    st.session_state.score = 0
 
 game = st.session_state.game
 
-# -------- LAYOUT --------
-left, right = st.columns([3, 1], gap="small")
+st.title("Deep Q-Learning Snake Agent")
 
-with left:
-    st.markdown("## Deep Q-Learning Snake Agent")
-    game_slot = st.empty()     # 🔒 ALWAYS EXISTS
-    score_slot = st.empty()
+col1, col2 = st.columns([3, 1])
 
-with right:
-    start = st.button("Start AI")
-    reset = st.button("Reset")
-    speed = st.slider("Speed", 1, 20, 10)
+with col2:
+    if st.button("Start AI"):
+        st.session_state.game = SnakeGame()
+        st.session_state.running = True
 
-# -------- CONTROLS --------
-if start:
-    st.session_state.game = SnakeGame()
-    st.session_state.running = True
-
-if reset:
-    st.session_state.game = SnakeGame()
-    st.session_state.running = False
-    st.session_state.frame = None
-    st.session_state.score = 0
-
-# -------- GAME STEP --------
-if st.session_state.running:
-    state = get_state(game)
-
-    action = [0, 0, 0]
-    action[agent.act(state)] = 1
-
-    _, done, score = game.step(action)
-
-    st.session_state.frame = render(game)
-    st.session_state.score = score
-
-    if done:
+    if st.button("Reset"):
+        st.session_state.game = SnakeGame()
         st.session_state.running = False
 
-    time.sleep(1 / speed)
-    st.rerun()
+    speed = st.slider("Speed", 1, 20, 20)
 
-# -------- RENDER (UNCONDITIONAL) --------
-if st.session_state.frame is not None:
-    game_slot.image(
-        st.session_state.frame,
-        width=640
-    )
-    score_slot.markdown(f"**Score:** {st.session_state.score}")
+with col1:
+    if st.session_state.running:
+        state = get_state(game)
+
+        action = [0, 0, 0]
+        action[agent.act(state)] = 1
+
+        _, done, score = game.step(action)
+        frame = render(game)
+
+        st.image(frame, caption=f"Score: {score}")
+
+        if done:
+            st.session_state.running = False
+
+        delay = 1 / speed
+        time.sleep(delay)
+        st.rerun()
