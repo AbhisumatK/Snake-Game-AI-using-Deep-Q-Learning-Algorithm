@@ -8,7 +8,6 @@ from state_extractor import get_state
 
 st.set_page_config(layout="wide")
 
-# Load model ONCE
 @st.cache_resource
 def load_agent():
     return SnakeAgent()
@@ -37,7 +36,12 @@ with col2:
 
     speed = st.slider("Speed", 1, 20, 20)
 
+
+
 with col1:
+    frame_placeholder = st.empty()
+    
+    game_placeholder = st.empty()
     if st.session_state.running:
         state = get_state(game)
 
@@ -47,11 +51,15 @@ with col1:
         _, done, score = game.step(action)
         frame = render(game)
 
-        st.image(frame, caption=f"Score: {score}")
+        frame_placeholder.image(frame, caption=f"Score: {score}")
 
         if done:
             st.session_state.running = False
 
-        delay = 1 / speed
-        time.sleep(delay)
+        # Convert speed → delay
+        time.sleep(1 / speed)
         st.rerun()
+    else:
+        # Render static frame when idle
+        frame = render(game)
+        frame_placeholder.image(frame, caption=f"Score: {game.score}")
