@@ -1,4 +1,4 @@
-# 🐍 Deep Q-Learning Snake AI
+# Deep Q-Learning Snake AI
 
 A Reinforcement Learning–based Snake game agent trained using **Deep Q-Learning (DQN)** and deployed with an interactive **Streamlit demo**.
 
@@ -10,7 +10,9 @@ This project demonstrates both **core RL concepts** and **real-world deployment 
 
 ![Snake AI Demo](assets/video.gif)
 
-**Live Demo (Streamlit Cloud):**  
+---
+
+## **Live Demo (Streamlit Cloud):**  
 https://snake-game-ai-abhisumat.streamlit.app/
 
 > Due to Streamlit Cloud rendering limitations, the deployed version uses **step-based visualization** instead of continuous animation.  
