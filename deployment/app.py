@@ -1,9 +1,10 @@
 import streamlit as st
+import time
 
 from snake_game import SnakeGame
+from renderer import render
 from inference import SnakeAgent
 from state_extractor import get_state
-from renderer import render
 
 st.set_page_config(layout="wide")
 
@@ -13,50 +14,52 @@ def load_agent():
 
 agent = load_agent()
 
-# ---------- SESSION STATE ----------
+# Session state
 if "game" not in st.session_state:
     st.session_state.game = SnakeGame()
     st.session_state.running = False
-    st.session_state.score = 0
 
 game = st.session_state.game
 
-# ---------- LAYOUT ----------
-col1, col2 = st.columns([3, 1], gap="small")
+st.title("Deep Q-Learning Snake Agent")
 
-with col1:
-    st.markdown("## Deep Q-Learning Snake Agent")
-    game_slot = st.empty()
+col1, col2 = st.columns([3, 1])
 
 with col2:
-    start = st.button("Start AI")
-    step = st.button("Next Step")
-    reset = st.button("Reset")
-    steps = st.slider("Steps per click", 1, 10, 3)
+    if st.button("Start AI"):
+        st.session_state.game = SnakeGame()
+        st.session_state.running = True
 
-# ---------- CONTROLS ----------
-if start:
-    st.session_state.running = True
+    if st.button("Reset"):
+        st.session_state.game = SnakeGame()
+        st.session_state.running = False
 
-if reset:
-    st.session_state.game = SnakeGame()
-    st.session_state.running = False
-    st.session_state.score = 0
+    speed = st.slider("Speed", 1, 20, 20)
 
-# ---------- GAME LOGIC ----------
-if st.session_state.running and step:
-    for _ in range(steps):
+
+
+with col1:
+    frame_placeholder = st.empty()
+    
+    game_placeholder = st.empty()
+    if st.session_state.running:
         state = get_state(game)
+
         action = [0, 0, 0]
         action[agent.act(state)] = 1
 
         _, done, score = game.step(action)
-        st.session_state.score = score
+        frame = render(game)
+
+        frame_placeholder.image(frame, caption=f"Score: {score}")
 
         if done:
             st.session_state.running = False
-            break
 
-# ---------- RENDER ----------
-frame = render(game)
-game_slot.image(frame, width=640, caption=f"Score: {st.session_state.score}")
+        # Convert speed → delay
+        time.sleep(1 / speed)
+        st.rerun()
+    else:
+        # Render static frame when idle
+        frame = render(game)
+        frame_placeholder.image(frame, caption=f"Score: {game.score}")
