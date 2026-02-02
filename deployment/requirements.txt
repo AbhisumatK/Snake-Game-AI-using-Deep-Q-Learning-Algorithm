@@ -2,3 +2,5 @@ streamlit
 torch
 numpy
 matplotlib
+streamlit
+streamlit-autorefresh

@@ -1,5 +1,5 @@
 import streamlit as st
-import time
+from streamlit_autorefresh import st_autorefresh
 
 from snake_game import SnakeGame
 from renderer import render
@@ -14,42 +14,42 @@ def load_agent():
 
 agent = load_agent()
 
-# ---------------- SESSION STATE ----------------
+# ---------- SESSION STATE ----------
 if "game" not in st.session_state:
     st.session_state.game = SnakeGame()
     st.session_state.running = False
-    st.session_state.frame = None
     st.session_state.score = 0
 
 game = st.session_state.game
 
-# ---------------- LAYOUT ----------------
+# ---------- LAYOUT ----------
 col1, col2 = st.columns([3, 1], gap="small")
 
 with col1:
     st.markdown("## Deep Q-Learning Snake Agent")
     game_slot = st.empty()
-    score_slot = st.empty()
 
 with col2:
     start = st.button("Start AI")
     reset = st.button("Reset")
-    speed = st.slider("Game Speed (logic steps per frame)", 1, 10, 3)
+    speed = st.slider("Speed", 1, 10, 3)
 
-# ---------------- CONTROLS ----------------
+# ---------- CONTROLS ----------
 if start:
     st.session_state.game = SnakeGame()
     st.session_state.running = True
+    st.session_state.score = 0
 
 if reset:
     st.session_state.game = SnakeGame()
     st.session_state.running = False
-    st.session_state.frame = None
     st.session_state.score = 0
 
-# ---------------- GAME LOOP ----------------
-MAX_FPS = 6  # hard Streamlit Cloud limit
+# ---------- AUTO REFRESH ----------
+if st.session_state.running:
+    st_autorefresh(interval=200, key="snake_refresh")  # ~5 FPS
 
+# ---------- GAME STEP ----------
 if st.session_state.running:
     for _ in range(speed):  # logic speed
         state = get_state(game)
@@ -64,18 +64,11 @@ if st.session_state.running:
             st.session_state.running = False
             break
 
-    st.session_state.frame = render(game)
-
-    time.sleep(1 / MAX_FPS)
-    st.rerun()
-
-# ---------------- RENDER (ALWAYS) ----------------
-if st.session_state.frame is None:
-    st.session_state.frame = render(game)
+# ---------- RENDER ----------
+frame = render(game)
 
 game_slot.image(
-    st.session_state.frame,
-    width=640
+    frame,
+    width=640,
+    caption=f"Score: {st.session_state.score}"
 )
-
-score_slot.markdown(f"**Score:** {st.session_state.score}")
