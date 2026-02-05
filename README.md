@@ -8,6 +8,8 @@ This project demonstrates both **core RL concepts** and **real-world deployment 
 
 ## Demo
 
+![Deployed Snake AI](assets/deployed.gif)
+
 ![Snake AI Demo](assets/video.gif)
 
 ---
